@@ -90,7 +90,6 @@ function codetransform!(tr!::Function, @nospecialize(p::Pair{<:Function, <:Funct
     for m in methods(p.first).ms
         ci = uncompressed_ast(m)
         tr!(ci)
-        @show argdata(m.sig, p.second), ci, mod
         jl_method_def(argdata(m.sig, p.second), ci, mod)
     end
 end
