@@ -45,23 +45,35 @@ argdata(sig) = svec(unwrap_unionall(sig).parameters::SimpleVector, svec(typevars
 argdata(sig, f::Function) = svec(svec(typeof(f), unwrap_unionall(sig).parameters[2:end]...), svec(typevars(sig)...))
 
 """
-    addmethod(sig, ci)
+    addmethod!(f, argtypes, ci)
 
-Add a method to a function
+Add a method to a function.
+
+The types of the arguments is given as a `Tuple`.
 
 Example:
 ```
 g(x) = x + 13
 ci = code_lowered(g)[1]
 function f end
-addmethod!(Tuple{typeof(f), Any}, ci)
+addmethod!(f, (Any,), ci)
 f(1) # returns 14
+```
+"""
+addmethod!(f::Function, argtypes::Tuple, ci::CodeInfo) = addmethod!(makesig(f, argtypes), ci)
+"""
+    addmethod(sig, ci)
+
+Alternative syntax where the call signature is a `Tuple` type.
+
+Example:
+```
+addmethod!(Tuple{typeof(f), Any}, ci)
 ```
 """
 function addmethod!(sig::Type{<:Tuple{F, Vararg}}, ci::CodeInfo) where {F<:Function}
     jl_method_def(argdata(sig), ci, getmodule(F))
 end
-addmethod!(f::Function, argtypes::Tuple, ci::CodeInfo) = addmethod(makesig(f, argtypes), ci)
 
 @specialize # restore default
 

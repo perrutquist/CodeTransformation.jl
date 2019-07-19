@@ -10,8 +10,15 @@ using Test
         g(x) = x + 13
         ci = code_lowered(g)[1]
         function f end
-        addmethod!(Tuple{typeof(f), Any}, ci)
+        addmethod!(f, (Any,), ci)
         @test f(1) === 14
+
+        # Alternative syntax
+        function f2 end
+        @test CodeTransformation.makesig(f2, (Any,)) === Tuple{typeof(f2), Any}
+        addmethod!(Tuple{typeof(f2), Any}, ci)
+        @test f2(1) === 14
+
     end
 
     let

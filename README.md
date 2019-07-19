@@ -4,10 +4,10 @@
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/perrutquist/CodeTransformation.jl?svg=true)](https://ci.appveyor.com/project/perrutquist/CodeTransformation-jl)
 [![Codecov](https://codecov.io/gh/perrutquist/CodeTransformation.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/perrutquist/CodeTransformation.jl)
 
-This is an experimental package for working with [`CodeInfo`](https://pkg.julialang.org/docs/julia/THl1k/1.1.1/devdocs/ast.html#CodeInfo-1)
-objects that are containded in the vectors that `code_lowered` and `code_typed` return.
+This is an experimental package for working with the [`CodeInfo`](https://pkg.julialang.org/docs/julia/THl1k/1.1.1/devdocs/ast.html#CodeInfo-1)
+objects that are containded in the vectors that Julia's `code_lowered` and `code_typed` functions return.
 
-These objects can be modified and then turned back into functions (technically methods of functions),
+These objects can be modified and then turned back into functions (technically methods),
 making it possible to apply code transformations to functions defined in other packages,
 or in Julia itself.
 
@@ -39,4 +39,4 @@ e(1) # returns 8
 g(1) # still returns 14
 ```
 
-Note: The syntax may change in the next minor release.
+Note: The syntax may change in the next minor release of this package.
