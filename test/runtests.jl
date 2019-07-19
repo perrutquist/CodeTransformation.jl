@@ -5,11 +5,29 @@ using Test
     @test CodeTransformation.getmodule(typeof(sin)) === Base
     @test CodeTransformation.getmodule(sin) === Base
 
-    # Test copying CodeInfo from g to e
-    g(x) = x + 40
-    ci = Base.uncompressed_ast(methods(g).ms[1])
-    function e end
-    addmethod!(Tuple{typeof(e), Any}, ci)
-    @test e(2) === 42
+    let
+        # Test example from doctring to addmethod!
+        g(x) = x + 13
+        ci = code_lowered(g)[1]
+        function f end
+        addmethod!(Tuple{typeof(f), Any}, ci)
+        @test f(1) === 14
+    end
+
+    let
+        # Test example from doctring to codetransform!
+        g(x) = x + 13
+        function e end
+        codetransform!(g => e) do ci
+            for ex in ci.code
+                if ex isa Expr
+                    map!(x -> x === 13 ? 7 : x, ex.args, ex.args)
+                end
+            end
+            ci
+        end
+        @test e(1) === 8
+        @test g(1) === 14
+    end
 
 end

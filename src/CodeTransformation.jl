@@ -1,9 +1,13 @@
 module CodeTransformation
 
 import Core: SimpleVector, svec, CodeInfo
-import Base: uncompressed_ast
+import Base: uncompressed_ast, unwrap_unionall
 
 export addmethod!, codetransform!
+
+# Most of this code is derived from Nathan Daly's DeepcopyModules.jl
+# which is under the MIT license.
+# https://github.com/NHDaly/DeepcopyModules.jl
 
 """
     jl_method_def(argdata, ci, mod) - C function wrapper
@@ -21,10 +25,6 @@ jl_method_def(argdata::SimpleVector, ci::CodeInfo, mod::Module) =
 typevars(T::UnionAll) = (T.var, typevars(T.body)...)
 typevars(T::DataType) = ()
 
-"Recursively get the body (sans typevars) from a `UnionAll` type"
-body(T::UnionAll) = body(T.body)
-body(T::DataType) = T
-
 @nospecialize # the below functions need not specialize on arguments
 
 "Get the module of a function"
@@ -41,8 +41,8 @@ Turn a call signature into the 'argdata' `svec` that `jl_method_def` uses
 When a function is given in the second argument, it replaces the one in the
 call signature.
 """
-argdata(sig) = svec(body(sig).parameters::SimpleVector, svec(typevars(sig)...))
-argdata(sig, f::Function) = svec(svec(typeof(f), body(sig).parameters[2:end]...), svec(typevars(sig)...))
+argdata(sig) = svec(unwrap_unionall(sig).parameters::SimpleVector, svec(typevars(sig)...))
+argdata(sig, f::Function) = svec(svec(typeof(f), unwrap_unionall(sig).parameters[2:end]...), svec(typevars(sig)...))
 
 """
     addmethod(sig, ci)
@@ -52,7 +52,7 @@ Add a method to a function
 Example:
 ```
 g(x) = x + 13
-ci = Base.uncompressed_ast(methods(g).ms[1])
+ci = code_lowered(g)[1]
 function f end
 addmethod!(Tuple{typeof(f), Any}, ci)
 f(1) # returns 14
@@ -66,12 +66,12 @@ addmethod!(f::Function, argtypes::Tuple, ci::CodeInfo) = addmethod(makesig(f, ar
 @specialize # restore default
 
 """
-    codetransform(tr!, src => dst)
+    codetransform!(tr, dst, src)
 
-Apply a code transformation function `tr!` on the methods of a function `src`,
+Apply a code transformation function `tr` on the methods of a function `src`,
 adding the transformed methods to another function `dst`.
 
-Example: Replace the constant 13 by 7 in a function.
+Example: Search-and-replace a constant in a function.
 ```
 g(x) = x + 13
 function e end
@@ -81,17 +81,21 @@ codetransform!(g => e) do ci
             map!(x -> x === 13 ? 7 : x, ex.args, ex.args)
         end
     end
+    ci
 end
 e(1) # returns 8
 ```
 """
-function codetransform!(tr!::Function, @nospecialize(p::Pair{<:Function, <:Function}))
-    mod = getmodule(p.second)
-    for m in methods(p.first).ms
+function codetransform!(tr::Function, @nospecialize(dst::Function), @nospecialize(src::Function))
+    mod = getmodule(dst)
+    for m in methods(src).ms
         ci = uncompressed_ast(m)
-        tr!(ci)
-        jl_method_def(argdata(m.sig, p.second), ci, mod)
+        ci = tr(ci)
+        jl_method_def(argdata(m.sig, dst), ci, mod)
     end
 end
+"Alternative syntax: codetransform!(tr, src => dst)"
+codetransform!(tr::Function, @nospecialize(p::Pair{<:Function, <:Function})) =
+    codetransform!(tr, p.second, p.first)
 
 end # module
