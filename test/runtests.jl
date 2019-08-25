@@ -37,4 +37,15 @@ using Test
         @test g(1) === 14
     end
 
+    let
+        a = Vector{T} where T
+        b = CodeTransformation.typevars(a)
+        @test b isa Tuple
+        @test length(b) == 1
+        @test b[1] isa TypeVar
+        @test b[1].name == :T
+        @test b[1].lb === Union{}
+        @test b[1].ub === Any
+    end
+
 end
