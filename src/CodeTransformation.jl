@@ -17,8 +17,14 @@ source tree at julia/src/method.c
 
 Use `addmethod!` or `codetransform!` instead of calling this function directly.
 """
-jl_method_def(argdata::SimpleVector, ci::CodeInfo, mod::Module) =
-    ccall(:jl_method_def, Cvoid, (SimpleVector, Any, Ptr{Module}), argdata, ci, pointer_from_objref(mod))
+function jl_method_def(argdata::SimpleVector, ci::CodeInfo, mod::Module)
+    #ccall(:jl_method_def, Cvoid, (SimpleVector, Any, Ptr{Module}), argdata, ci, pointer_from_objref(mod))
+    @static if isdefined(Core.Compiler, :OverlayMethodTable)
+        ccall(:jl_method_def, Cvoid, (SimpleVector, Ptr{Cvoid}, Any, Ptr{Module}), argdata, C_NULL, ci, pointer_from_objref(mod))
+    else
+        ccall(:jl_method_def, Cvoid, (SimpleVector, Any, Ptr{Module}), argdata, ci, pointer_from_objref(mod))
+    end
+end
 # `argdata` is `svec(svec(types...), svec(typevars...))`
 
 "Recursively get the typevars from a `UnionAll` type"
