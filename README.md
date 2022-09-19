@@ -1,8 +1,12 @@
-# CodeTransformation
+# CodeTransformation (forked from [here](https://github.com/perrutquist/CodeTransformation.jl)) 
 
 [![Build Status](https://travis-ci.com/perrutquist/CodeTransformation.jl.svg?branch=master)](https://travis-ci.com/perrutquist/CodeTransformation.jl)
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/perrutquist/CodeTransformation.jl?svg=true)](https://ci.appveyor.com/project/perrutquist/CodeTransformation-jl)
 [![Codecov](https://codecov.io/gh/perrutquist/CodeTransformation.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/perrutquist/CodeTransformation.jl)
+
+Author: [Per Rutquist](https://github.com/perrutquist)
+
+See [here](https://discourse.julialang.org/t/transform-codeinfo-of-a-function-to-get-a-new-function-by-purging-unused-args-from-its-arg-list/87459) for an application
 
 Note: This package is currently not under active development. You might want to have a look at [IRTools](https://github.com/MikeInnes/IRTools.jl) instead.
 
