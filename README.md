@@ -4,6 +4,8 @@
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/perrutquist/CodeTransformation.jl?svg=true)](https://ci.appveyor.com/project/perrutquist/CodeTransformation-jl)
 [![Codecov](https://codecov.io/gh/perrutquist/CodeTransformation.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/perrutquist/CodeTransformation.jl)
 
+Author: [Per Rutquist](https://github.com/perrutquist)
+
 Note: This package is currently not under active development. You might want to have a look at [IRTools](https://github.com/MikeInnes/IRTools.jl) instead.
 
 This is an experimental package for working with the [`CodeInfo`](https://pkg.julialang.org/docs/julia/THl1k/1.1.1/devdocs/ast.html#CodeInfo-1)
