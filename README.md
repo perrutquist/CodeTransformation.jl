@@ -6,6 +6,8 @@
 
 Author: [Per Rutquist](https://github.com/perrutquist)
 
+See [here](https://discourse.julialang.org/t/transform-codeinfo-of-a-function-to-get-a-new-function-by-purging-unused-args-from-its-arg-list/87459) for an application
+
 Note: This package is currently not under active development. You might want to have a look at [IRTools](https://github.com/MikeInnes/IRTools.jl) instead.
 
 This is an experimental package for working with the [`CodeInfo`](https://pkg.julialang.org/docs/julia/THl1k/1.1.1/devdocs/ast.html#CodeInfo-1)
